@@ -1,6 +1,7 @@
 package com.sabel.artikelbestand;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Verwalte den Bestand eines Unternehmens. Der Bestand ist beschrieben durch
@@ -26,8 +27,21 @@ public class Bestandsverwalter {
 	 * @param artikel
 	 *            Der Artikel, der neue eingeführt werden soll.
 	 */
-	public void neuerArtikel(Artikel artikel) {
+	public void neuerArtikel2(Artikel artikel) {
 		lager.add(artikel);
+	}
+
+	public void neuerArtikel(Artikel artikel) {
+		if (!lager.contains(artikel) && artikel != null) {
+			lager.add(artikel);
+		}
+	}
+
+	public void neuerArtikel3(Artikel artikel) {
+		Artikel gefartikel = findeArtikel(artikel.gibNummer());
+		if (gefartikel == null && artikel != null) {
+			lager.add(gefartikel);
+		}
 	}
 
 	/**
@@ -40,9 +54,13 @@ public class Bestandsverwalter {
 	 *            Die angelieferte Menge.
 	 */
 	public void aufnehmen(int nummer, int menge) {
-		
-		
 
+		Artikel artikel = findeArtikel(nummer);
+		if (artikel != null) {
+			artikel.erhoeheBestand(menge);
+		} else {
+			System.out.println("Kein Artikel mit der Nummer: " + nummer + " vorhanden!");
+		}
 	}
 
 	/**
@@ -62,6 +80,40 @@ public class Bestandsverwalter {
 		}
 
 		return null;
+	}
+
+	// public Artikel findeArtikel(String name) {
+	// for (Artikel artikel : lager) {
+	// if (artikel.gibName().equals(name)) {
+	// return artikel;
+	// }
+	// }
+	// return null;
+	// }
+
+	public Artikel findeArtikel(String name) {
+
+		Iterator<Artikel> iterator = lager.iterator();
+		while (iterator.hasNext()) {
+			Artikel artikel = (Artikel) iterator.next();
+			if (artikel != null && artikel.gibName().equals(name)) {
+				return artikel;
+			}
+		}
+		return null;
+	}
+
+	public Artikel loescheArtikel(String name) {
+
+		Iterator<Artikel> iterator = lager.iterator();
+		Artikel artikel = null;
+		while (iterator.hasNext()) {
+			artikel = (Artikel) iterator.next();
+			if (artikel != null && artikel.gibName().equals(name)) {
+				iterator.remove();
+			}
+		}
+		return artikel;
 	}
 
 	/**
@@ -92,6 +144,14 @@ public class Bestandsverwalter {
 		for (Artikel artikel : lager) {
 			System.out.println(artikel.toString());
 		}
-
 	}
+
+	public void niedrigenArtikelbestandAusgeben(int minimum) {
+		for (Artikel artikel : lager) {
+			if (artikel.gibBestand() < minimum) {
+				System.out.println(artikel);
+			}
+		}
+	}
+
 }
